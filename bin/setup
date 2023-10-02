@@ -37,8 +37,23 @@ with_checkmark "Removing .git/" do
   FileUtils.rm_r(".git", secure: true)
 end
 
-with_checkmark "Removing bin/setup" do
+with_checkmark "\nReplacing bin/setup" do
   FileUtils.rm(__FILE__)
+  File.write("bin/setup", <<~BASH)
+    #!/usr/bin/env bash
+
+    set -euo pipefail
+    IFS=$'\n\t'
+    set -vx
+
+    bundle install
+
+    # Do any other automated setup that you need to do here
+  BASH
+end
+
+with_checkmark "\nReplacing README" do
+  FileUtils.move("README-template.md", "README.md", secure: true)
 end
 
 gem_name = ARGV.first
@@ -70,20 +85,6 @@ Dir["**/*"].each do |path|
 
     File.write(path, content)
   end
-end
-
-with_checkmark "\nWriting bin/setup" do
-  File.write("bin/setup", <<~BASH)
-    #!/usr/bin/env bash
-
-    set -euo pipefail
-    IFS=$'\n\t'
-    set -vx
-
-    bundle install
-
-    # Do any other automated setup that you need to do here
-  BASH
 end
 
 with_checkmark "\nBundling gems" do

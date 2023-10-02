@@ -4,29 +4,21 @@
 
 This is a template gem repository. There is nothing interesting here.
 
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
 ## Usage
 
-```ruby
-spec.add_dependency "tag_tango-template"
+```sh
+git clone https://github.com/trinistr/tag_tango-template <name>
+cd <name>
+bin/setup <name>
 ```
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests or `rake` to run all checks.
+DO NOT RUN `bin/setup`, this initializes a new gem.
 
-<!-- To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org). -->
+Add, remove and change files as needed.
+When `bin/setup <some_name>` is ran, `template` and `Template` will be replaced
+with `some_name` and `SomeName` accordingly.
 
 ## Contributing
 

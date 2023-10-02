@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = TagTango::Template::VERSION
   spec.authors = ["Alexandr Bulancov"]
 
-  spec.summary = "A template module for TagTango"
+  spec.summary = "A Template module for TagTango"
   spec.homepage = "https://github.com/trinistr/tag_tango-template"
   spec.required_ruby_version = ">= 3.1.0"
 

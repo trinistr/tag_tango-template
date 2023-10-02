@@ -12,7 +12,7 @@ end
 
 if ARGV.empty?
   warn "gem name required"
-  exit 1
+  exit 2
 end
 
 unless File.exist?("./tag_tango-template.gemspec")
@@ -80,20 +80,20 @@ with_checkmark "\nBundling gems" do
   `bundle install --quiet`
   $CHILD_STATUS.success?
 end
-exit 1 unless $CHILD_STATUS.success?
+exit 3 unless $CHILD_STATUS.success?
 
 with_checkmark "\nInitializing repository" do
   `git init -q -b main`
   $CHILD_STATUS.success?
 end
-exit 1 unless $CHILD_STATUS.success?
+exit 4 unless $CHILD_STATUS.success?
 
 with_checkmark "Committing files" do
   `git add .`
   $CHILD_STATUS.success? && `git commit -m "Initial commit"`
   $CHILD_STATUS.success?
 end
-exit 1 unless $CHILD_STATUS.success?
+exit 4 unless $CHILD_STATUS.success?
 
 puts
 puts "All done!"

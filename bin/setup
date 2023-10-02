@@ -1,8 +1,109 @@
-#!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-set -vx
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-bundle install
+require "fileutils"
+require "English"
 
-# Do any other automated setup that you need to do here
+if %w[-h --help].include?(ARGV.first)
+  puts "Usage:"
+  puts "\tbin/setup [tag_tango-]name"
+  exit
+end
+
+if ARGV.empty?
+  warn "gem name required"
+  exit 1
+end
+
+unless File.exist?("./tag_tango-template.gemspec")
+  warn "not inside a template directory"
+  exit 2
+end
+
+# Do something that may succeed or fail, adding a ballot box to the description.
+def with_checkmark(what)
+  print "#{what} ☐"
+  result = yield
+  if result.nil?
+    puts
+  elsif result
+    puts "\b☑"
+  else
+    puts "\b☒"
+  end
+end
+
+with_checkmark "Removing .git/" do
+  FileUtils.rm_r(".git", secure: true)
+end
+
+with_checkmark "Removing bin/setup" do
+  FileUtils.rm(__FILE__)
+end
+
+gem_name = ARGV.first
+gem_name = gem_name.delete_prefix("tag_tango-")
+
+puts "\nRenaming files:"
+Dir["**/*"].each do |path|
+  with_checkmark path do
+    next true if path.match?(%r{template[^/]*/.+})
+    next false unless path.match?(%r{template[^/]*\z})
+
+    new_path = path.sub("template", gem_name)
+    FileUtils.move(path, new_path, secure: true)
+  end
+end
+
+puts "\nReplacing name to '#{gem_name}':"
+Dir["**/*"].each do |path|
+  next unless File.file?(path)
+
+  with_checkmark path do
+    content = File.read(path)
+    next false unless content.match?(/[Tt]emplate/)
+
+    content.gsub!("template", gem_name)
+    capitalized_name = gem_name.gsub(/\A\w|(?<=_)\w/, &:upcase)
+    capitalized_name.delete!("_")
+    content.gsub!("Template", capitalized_name)
+
+    File.write(path, content)
+  end
+end
+
+with_checkmark "\nWriting bin/setup" do
+  File.write("bin/setup", <<~BASH)
+    #!/usr/bin/env bash
+
+    set -euo pipefail
+    IFS=$'\n\t'
+    set -vx
+
+    bundle install
+
+    # Do any other automated setup that you need to do here
+  BASH
+end
+
+with_checkmark "\nBundling gems" do
+  `bundle install --quiet`
+  $CHILD_STATUS.success?
+end
+exit 1 unless $CHILD_STATUS.success?
+
+with_checkmark "\nInitializing repository" do
+  `git init -q -b main`
+  $CHILD_STATUS.success?
+end
+exit 1 unless $CHILD_STATUS.success?
+
+with_checkmark "Committing files" do
+  `git add .`
+  $CHILD_STATUS.success? && `git commit -m "Initial commit"`
+  $CHILD_STATUS.success?
+end
+exit 1 unless $CHILD_STATUS.success?
+
+puts
+puts "All done!"
